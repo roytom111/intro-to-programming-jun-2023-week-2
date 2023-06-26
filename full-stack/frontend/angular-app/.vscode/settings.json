@@ -1,0 +1,9 @@
+{
+
+    "editor.linkedEditing": true,
+
+    "files.autoSave": "onFocusChange",
+
+    "editor.formatOnSave": true
+
+}
