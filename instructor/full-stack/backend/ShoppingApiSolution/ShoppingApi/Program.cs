@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ShoppingDataContext>(options =>
     options.UseNpgsql(shoppingConnectionString);
 });
 
-builder.Services.AddTransient<ILookupTheStatus, StatusLookup>();
+builder.Services.AddScoped<ILookupTheStatus, StatusLookup>();
 
 var app = builder.Build();
 

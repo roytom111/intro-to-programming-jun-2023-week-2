@@ -19,21 +19,18 @@ public class StatusLookup : ILookupTheStatus
         // if the status was saved within 10 minutes from now, use that - return that.
         // if there is no status, or it is stale (>10 old) write a new status to the datbase, and return THAT.
         var savedStatus = await _context.StatusMessages.OrderByDescending(m => m.LastChecked).FirstOrDefaultAsync();
-       
+
         if (savedStatus is null)
         {
-            var entityToSave = new StatusEntity
-            {
-                LastChecked = DateTimeOffset.Now,
-                Message = "Looks Good"
-            };
+            var entityToSave = GetFreshStatusEntity();
             _context.StatusMessages.Add(entityToSave);
             await _context.SaveChangesAsync();
+            savedStatus = entityToSave;
         }
         else
         {
-            
-            if(IsStale(savedStatus))
+
+            if (IsStale(savedStatus))
             {
                 var entityToSave = GetFreshStatusEntity();
                 _context.StatusMessages.Add(entityToSave);
@@ -43,6 +40,7 @@ public class StatusLookup : ILookupTheStatus
 
         }
 
+        // Mapping - copying from one thing to another.
         var response = new GetStatusResponse
         {
             Message = savedStatus!.Message,
