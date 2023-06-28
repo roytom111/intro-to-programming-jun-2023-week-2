@@ -15,31 +15,51 @@ public class StatusLookup : ILookupTheStatus
 
     public async Task<GetStatusResponse> GetCurrentStatusAsync()
     {
-        // find the latest status saved in the database.
-        // if the status was saved within 10 minutes from now, use that - return that.
-        // if there is no status, or it is stale (>10 old) write a new status to the datbase, and return THAT.
-        var savedStatus = await _context.StatusMessages.OrderBy(m => m.LastChecked).FirstOrDefaultAsync();
-        if (savedStatus is null)
+        
+        var savedStatus = await _context.StatusMessages
+            .OrderByDescending(m => m.LastChecked)
+            .FirstOrDefaultAsync();
+       
+        if (savedStatus is null) // This is the first time we've run this, and there is no StatusEntity saved.
         {
-            var entityToSave = new StatusEntity
-            {
-                LastChecked = DateTimeOffset.Now,
-                Message = "Looks Good"
-            };
+            var entityToSave = GetFreshStatusEntity();
             _context.StatusMessages.Add(entityToSave);
             await _context.SaveChangesAsync();
+            savedStatus = entityToSave;
         }
         else
         {
-            // check if it is "stale"... 
+            
+            if(IsStale(savedStatus)) // Ok, We have one, but let's update it if needed.
+            {
+                var entityToSave = GetFreshStatusEntity();
+                _context.StatusMessages.Add(entityToSave);
+                await _context.SaveChangesAsync();
+                savedStatus = entityToSave;
+            }
 
         }
         
-        var response = new GetStatusResponse
+        var response = new GetStatusResponse // Mapping that Entity to a Model.
         {
-            Message = "Looks Good Here",
-            LastChecked = DateTimeOffset.Now
+            Message = savedStatus!.Message,
+            LastChecked = savedStatus.LastChecked,
         };
-        return Task.FromResult(response);
+        return response;
+    }
+
+    private bool IsStale(StatusEntity statusEntity)
+    {
+        var stale = TimeSpan.FromMinutes(5);
+        return DateTime.Now.ToUniversalTime() - statusEntity.LastChecked > stale;
+
+    }
+    private StatusEntity GetFreshStatusEntity()
+    {
+        return new StatusEntity
+        {
+            LastChecked = DateTime.Now.ToUniversalTime(),
+            Message = "Looks Good"
+        };
     }
 }
