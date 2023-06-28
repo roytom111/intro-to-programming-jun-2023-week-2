@@ -3,8 +3,8 @@
 public class ShoppingListEntity
 {
     public int Id { get; set; }
-    public string Description { get; init; } = string.Empty;
-    public bool Purchased { get; init; }
+    public string Description { get; set; } = string.Empty;
+    public bool Purchased { get; set; }
 
     public DateTimeOffset DateAdded { get; set; }
     
