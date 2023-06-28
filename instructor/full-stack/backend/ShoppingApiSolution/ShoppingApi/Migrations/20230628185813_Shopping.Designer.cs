@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShoppingApi.Data;
@@ -11,9 +12,11 @@ using ShoppingApi.Data;
 namespace ShoppingApi.Migrations
 {
     [DbContext(typeof(ShoppingDataContext))]
-    partial class ShoppingDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230628185813_Shopping")]
+    partial class Shopping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
