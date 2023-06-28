@@ -15,22 +15,25 @@ public class StatusLookup : ILookupTheStatus
 
     public async Task<GetStatusResponse> GetCurrentStatusAsync()
     {
-        
-        var savedStatus = await _context.StatusMessages
-            .OrderByDescending(m => m.LastChecked)
-            .FirstOrDefaultAsync();
+        // find the latest status saved in the database.
+        // if the status was saved within 10 minutes from now, use that - return that.
+        // if there is no status, or it is stale (>10 old) write a new status to the datbase, and return THAT.
+        var savedStatus = await _context.StatusMessages.OrderByDescending(m => m.LastChecked).FirstOrDefaultAsync();
        
-        if (savedStatus is null) // This is the first time we've run this, and there is no StatusEntity saved.
+        if (savedStatus is null)
         {
-            var entityToSave = GetFreshStatusEntity();
+            var entityToSave = new StatusEntity
+            {
+                LastChecked = DateTimeOffset.Now,
+                Message = "Looks Good"
+            };
             _context.StatusMessages.Add(entityToSave);
             await _context.SaveChangesAsync();
-            savedStatus = entityToSave;
         }
         else
         {
             
-            if(IsStale(savedStatus)) // Ok, We have one, but let's update it if needed.
+            if(IsStale(savedStatus))
             {
                 var entityToSave = GetFreshStatusEntity();
                 _context.StatusMessages.Add(entityToSave);
@@ -39,8 +42,8 @@ public class StatusLookup : ILookupTheStatus
             }
 
         }
-        
-        var response = new GetStatusResponse // Mapping that Entity to a Model.
+
+        var response = new GetStatusResponse
         {
             Message = savedStatus!.Message,
             LastChecked = savedStatus.LastChecked,
