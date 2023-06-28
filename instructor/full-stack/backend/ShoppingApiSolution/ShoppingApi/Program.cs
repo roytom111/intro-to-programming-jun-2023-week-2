@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using ShoppingApi.Controllers;
+using ShoppingApi.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var shoppingConnectionString = builder.Configuration.GetConnectionString("shopping") ?? throw new Exception("No Connection String for Shopping");
+
+builder.Services.AddDbContext<ShoppingDataContext>(options =>
+{
+    options.UseNpgsql(shoppingConnectionString);
+});
 
 builder.Services.AddTransient<ILookupTheStatus, StatusLookup>();
 
