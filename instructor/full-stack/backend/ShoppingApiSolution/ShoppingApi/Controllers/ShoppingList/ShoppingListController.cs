@@ -19,4 +19,36 @@ public class ShoppingListController : ControllerBase
         return Ok(response);
         
     }
+
+    [HttpPost("/shopping-list")]
+    public async Task<ActionResult> AddShoppingListItem([FromBody] ShoppingListItemCreateModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            ShoppingListItemModel response = await _shoppingListManager.AddItemAsync(model);
+            
+            return Ok(response);
+        } else
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpPut("/completed-shopping-items/{itemId}")]
+    public async Task<ActionResult> MarkItemAsPurchased(string itemId, [FromBody] ShoppingListItemModel request)
+    {
+        if(itemId != request.Id)
+        {
+            return BadRequest();
+        }
+
+        bool wasUpdated = await _shoppingListManager.MarkAsPurchasedAsync(request);
+        if(wasUpdated)
+        {
+            return NoContent();
+        } else
+        {
+            return NotFound();
+        }
+    }
 }
