@@ -11,8 +11,9 @@ public class ShoppingListController : ControllerBase
     }
 
     [HttpGet("/shopping-list")]
-    public async Task<ActionResult> GetShoppingList()
+    public async Task<ActionResult> GetShoppingList(CancellationToken cancellationToken)
     {
+        //await Task.Delay(3000, cancellationToken);
 
         CollectionResponse<ShoppingListItemModel> response = await _shoppingListManager.GetShoppingListAsync();
         
@@ -23,6 +24,8 @@ public class ShoppingListController : ControllerBase
     [HttpPost("/shopping-list")]
     public async Task<ActionResult> AddShoppingListItem([FromBody] ShoppingListItemCreateModel model)
     {
+
+        //await Task.Delay(3000);
         if (ModelState.IsValid)
         {
             ShoppingListItemModel response = await _shoppingListManager.AddItemAsync(model);

@@ -11,4 +11,9 @@ public class ShoppingDataContext : DbContext
 
     public DbSet<ShoppingListEntity> ShoppingList { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+       // modelBuilder.Entity<StatusEntity>().Property(s => s.Message).HasMaxLength(100).IsRequired();
+    }
+
 }
