@@ -8,6 +8,22 @@ import { ListDocuments, ListEvents } from './list.actions';
 
 @Injectable()
 export class ListEffects {
+  markPurchased$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ListEvents.itemMarkedPurchased),
+      mergeMap((originalAction) =>
+        this.http
+          .put(
+            `http://localhost:1338/completed-shopping-items/${originalAction.payload.id}`,
+            originalAction.payload,
+          )
+          .pipe(
+            map(() => ({ ...originalAction.payload, purchased: true })),
+            map((updatedItem) => ListDocuments.item({ payload: updatedItem })),
+          ),
+      ),
+    );
+  });
   // when an item is added -> send it to the api -> item
   addItem$ = createEffect(() => {
     return this.actions$.pipe(

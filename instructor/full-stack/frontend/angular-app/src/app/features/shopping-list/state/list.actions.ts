@@ -10,6 +10,7 @@ export const ListEvents = createActionGroup({
   source: 'Shopping List Events',
   events: {
     'Item Added': props<{ payload: ShoppingListEntityCreateModel }>(),
+    'Item Marked Purchased': props<{ payload: ShoppingListEntity }>(),
   },
 });
 // Commands

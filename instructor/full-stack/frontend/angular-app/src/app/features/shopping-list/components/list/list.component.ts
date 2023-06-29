@@ -1,8 +1,9 @@
-import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ShoppingListItemModel } from '../../models';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ShoppingListItemModel } from '../../models';
 import { selectShoppingListModel } from '../../state';
+import { ListEvents } from '../../state/list.actions';
 
 @Component({
   selector: 'app-list',
@@ -17,6 +18,6 @@ export class ListComponent {
   constructor(private store: Store) {}
 
   markPurchased(item: ShoppingListItemModel) {
-    //this.store.dispatch(// new action here.)
+    this.store.dispatch(ListEvents.itemMarkedPurchased({ payload: item }));
   }
 }
