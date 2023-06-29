@@ -1,16 +1,19 @@
 <form
   [formGroup]="form"
-  (ngSubmit)="addItem()">
+  (ngSubmit)="addItem(focusMe)">
   <div class="form-group">
     <label for="description">Description of Item To Add</label>
+    <!-- Wait for lee to tell me about this -->
     <input
+      #focusMe
       type="text"
       id="description"
+      autofocus
       formControlName="description"
       class="form-control" />
     <div
       class="alert alert-danger"
-      *ngIf="description.errors && (description.touched || description.dirty)">
+      *ngIf="submitted() && description.errors">
       <p *ngIf="description.hasError('required')">This is Required</p>
       <p *ngIf="description.hasError('minlength')">This is Too Short!</p>
       <p *ngIf="description.hasError('maxlength')">This is Too Long!</p>

@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { ListEvents } from '../../state/list.actions';
 
 @Component({
   selector: 'app-create',
@@ -15,8 +17,8 @@ import {
   styleUrls: ['./create.component.css'],
 })
 export class CreateComponent {
-  @Output() itemAdded = new EventEmitter<string>();
-
+  submitted = signal(false);
+  constructor(private store: Store) {}
   form = new FormGroup({
     description: new FormControl<string>('', {
       nonNullable: true,
@@ -32,11 +34,20 @@ export class CreateComponent {
     return this.form.controls.description;
   }
 
-  addItem() {
+  addItem(elementYouWantToFocus: HTMLInputElement) {
+    this.submitted.set(true);
     if (this.form.valid) {
-      this.itemAdded.emit(this.description.value);
-    } else {
-      console.log(this.form.controls.description.errors);
+      const payload = {
+        description: this.form.controls.description.value,
+      };
+      this.store.dispatch(
+        ListEvents.itemAdded({
+          payload,
+        }),
+      );
+      this.form.reset();
+      this.submitted.set(false);
+      elementYouWantToFocus.focus();
     }
   }
 }

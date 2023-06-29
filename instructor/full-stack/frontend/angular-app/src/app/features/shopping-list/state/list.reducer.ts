@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { EntityState, createEntityAdapter } from '@ngrx/entity';
-import { createReducer, Action, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
+import { ListDocuments } from './list.actions';
 
 export interface ShoppingListEntity {
   id: string;
@@ -14,4 +15,8 @@ export const adapter = createEntityAdapter<ShoppingListEntity>();
 
 const initialState = adapter.getInitialState();
 
-export const reducer = createReducer(initialState);
+export const reducer = createReducer(
+  initialState,
+  on(ListDocuments.list, (s, a) => adapter.setAll(a.payload, s)),
+  on(ListDocuments.item, (s, a) => adapter.addOne(a.payload, s)),
+);
